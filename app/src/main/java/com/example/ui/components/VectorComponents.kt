@@ -61,9 +61,6 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
@@ -72,15 +69,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.AwsResource
 import com.example.data.model.FindingRiskDistribution
-import com.example.data.model.FindingType
 import com.example.data.model.RiskLevel
 import com.example.data.model.SecurityFinding
 import com.example.ui.theme.VectorCriticalRed
-import com.example.ui.theme.VectorDarkBackground
-import com.example.ui.theme.VectorDarkCriticalRed
-import com.example.ui.theme.VectorDarkHighRisk
-import com.example.ui.theme.VectorDarkLowRisk
-import com.example.ui.theme.VectorDarkMediumRisk
 import com.example.ui.theme.VectorDarkMustardYellow
 import com.example.ui.theme.VectorDarkPrimaryTeal
 import com.example.ui.theme.VectorDarkTeal
@@ -324,7 +315,6 @@ fun RiskDistributionCard(
             Spacer(modifier = Modifier.height(14.dp))
 
             if (distribution.isEmpty) {
-                // Appropriate empty state
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -340,7 +330,6 @@ fun RiskDistributionCard(
                     )
                 }
             } else {
-                // Segmented Proportion Bar
                 val animCrit by animateFloatAsState(
                     targetValue = distribution.criticalPercentage,
                     animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
@@ -405,7 +394,6 @@ fun RiskDistributionCard(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Breakdown Grid
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -677,7 +665,6 @@ fun FindingCard(
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Header Row: Severity Pill, Affected Resource, Expand Icon
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -726,7 +713,6 @@ fun FindingCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Title
             Text(
                 text = finding.title,
                 style = MaterialTheme.typography.titleMedium.copy(
@@ -737,7 +723,6 @@ fun FindingCard(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Short explanation
             Text(
                 text = finding.explanation,
                 style = MaterialTheme.typography.bodyMedium.copy(
@@ -745,7 +730,6 @@ fun FindingCard(
                 )
             )
 
-            // Select checkbox if eligible
             if (finding.isSelectable) {
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(
@@ -775,13 +759,11 @@ fun FindingCard(
                 }
             }
 
-            // Expanded Section
             AnimatedVisibility(visible = expanded) {
                 Column(modifier = Modifier.padding(top = 12.dp)) {
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Why it matters
                     Text(
                         text = "Why this matters:",
                         style = MaterialTheme.typography.labelMedium.copy(
@@ -800,7 +782,6 @@ fun FindingCard(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // Recommended fix
                     Text(
                         text = "Recommended fix:",
                         style = MaterialTheme.typography.labelMedium.copy(
@@ -819,7 +800,6 @@ fun FindingCard(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // Security clause
                     Text(
                         text = "Recommended security clause:",
                         style = MaterialTheme.typography.labelMedium.copy(
@@ -840,500 +820,6 @@ fun FindingCard(
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 12.sp,
                                 lineHeight = 17.sp
-                            ),
-                            modifier = Modifier.padding(10.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun VectorTopBar(
-    title: String = "Vector",
-    subtitle: String? = null,
-    canNavigateBack: Boolean = false,
-    onBackClick: () -> Unit = {},
-    actions: @Composable () -> Unit = {}
-) {
-    TopAppBar(
-        title = {
-            Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(CircleShape)
-                            .background(VectorPrimaryTeal),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Security,
-                            contentDescription = "Vector Shield",
-                            tint = VectorMustardYellow,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    )
-                }
-                if (subtitle != null) {
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
-                }
-            }
-        },
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.testTag("top_bar_back_button")
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Navigate back",
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            }
-        },
-        actions = { actions() },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
-    )
-}
-
-@Composable
-fun VectorBottomBar(
-    currentScreen: Screen,
-    onNavigate: (Screen) -> Unit
-) {
-    NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 6.dp
-    ) {
-        NavigationBarItem(
-            selected = currentScreen == Screen.HOME,
-            onClick = { onNavigate(Screen.HOME) },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") },
-            modifier = Modifier.testTag("nav_home"),
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.White,
-                selectedTextColor = MaterialTheme.colorScheme.primary,
-                indicatorColor = MaterialTheme.colorScheme.primary,
-                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        )
-        NavigationBarItem(
-            selected = currentScreen == Screen.ANALYZE,
-            onClick = { onNavigate(Screen.ANALYZE) },
-            icon = { Icon(Icons.Default.Analytics, contentDescription = "Analyze") },
-            label = { Text("Analyze") },
-            modifier = Modifier.testTag("nav_analyze"),
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.White,
-                selectedTextColor = MaterialTheme.colorScheme.primary,
-                indicatorColor = MaterialTheme.colorScheme.primary,
-                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        )
-        NavigationBarItem(
-            selected = currentScreen == Screen.HISTORY,
-            onClick = { onNavigate(Screen.HISTORY) },
-            icon = { Icon(Icons.Default.History, contentDescription = "History") },
-            label = { Text("History") },
-            modifier = Modifier.testTag("nav_history"),
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.White,
-                selectedTextColor = MaterialTheme.colorScheme.primary,
-                indicatorColor = MaterialTheme.colorScheme.primary,
-                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        )
-        NavigationBarItem(
-            selected = currentScreen == Screen.SETTINGS,
-            onClick = { onNavigate(Screen.SETTINGS) },
-            icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
-            label = { Text("Settings") },
-            modifier = Modifier.testTag("nav_settings"),
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.White,
-                selectedTextColor = MaterialTheme.colorScheme.primary,
-                indicatorColor = MaterialTheme.colorScheme.primary,
-                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        )
-    }
-}
-
-@Composable
-fun MetricCard(
-    title: String,
-    value: String,
-    subtitle: String? = null,
-    icon: ImageVector? = null,
-    accentColor: Color = VectorPrimaryTeal,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-    ) {
-        Column(
-            modifier = Modifier.padding(14.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    maxLines = 1
-                )
-                if (icon != null) {
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(CircleShape)
-                            .background(accentColor.copy(alpha = 0.12f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = accentColor,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                text = value,
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            )
-
-            if (subtitle != null) {
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = 11.sp
-                    ),
-                    maxLines = 1
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun RiskScoreBadge(
-    riskScore: Int,
-    riskLevel: RiskLevel,
-    modifier: Modifier = Modifier
-) {
-    val bgColor = when (riskLevel) {
-        RiskLevel.CRITICAL -> VectorCriticalRed.copy(alpha = 0.15f)
-        RiskLevel.HIGH -> VectorHighRisk.copy(alpha = 0.15f)
-        RiskLevel.MEDIUM -> VectorMustardYellow.copy(alpha = 0.25f)
-        RiskLevel.LOW -> VectorSoftGreen
-    }
-    val textColor = when (riskLevel) {
-        RiskLevel.CRITICAL -> VectorCriticalRed
-        RiskLevel.HIGH -> VectorHighRisk
-        RiskLevel.MEDIUM -> Color(0xFF8A7112)
-        RiskLevel.LOW -> VectorDarkTeal
-    }
-
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        color = bgColor,
-        border = BorderStroke(1.dp, textColor.copy(alpha = 0.4f))
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(textColor)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = "${riskLevel.label} ($riskScore/100)",
-                style = MaterialTheme.typography.labelMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = textColor
-                )
-            )
-        }
-    }
-}
-
-@Composable
-fun AwsResourceChip(
-    resource: AwsResource,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.Cloud,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = resource.name,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            )
-        }
-    }
-}
-
-@Composable
-fun FindingCard(
-    finding: SecurityFinding,
-    isSelectedForPrompt: Boolean,
-    onToggleSelect: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val arrowRotation by animateFloatAsState(targetValue = if (expanded) 180f else 0f, label = "arrowRotation")
-
-    val severityColor = when (finding.severity) {
-        RiskLevel.CRITICAL -> VectorCriticalRed
-        RiskLevel.HIGH -> VectorHighRisk
-        RiskLevel.MEDIUM -> VectorMustardYellow
-        RiskLevel.LOW -> VectorLowRisk
-    }
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { expanded = !expanded },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        border = BorderStroke(
-            1.dp,
-            if (isSelectedForPrompt) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-        )
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // Header Row: Severity Pill, Affected Resource, Expand Icon
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = severityColor.copy(alpha = 0.15f),
-                        border = BorderStroke(1.dp, severityColor.copy(alpha = 0.5f))
-                    ) {
-                        Text(
-                            text = finding.severity.label,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = severityColor
-                            ),
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                        )
-                    }
-
-                    if (finding.affectedResource != null) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = finding.affectedResource,
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontWeight = FontWeight.Medium
-                            )
-                        )
-                    }
-                }
-
-                IconButton(
-                    onClick = { expanded = !expanded },
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ExpandMore,
-                        contentDescription = if (expanded) "Collapse" else "Expand",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.rotate(arrowRotation)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Title
-            Text(
-                text = finding.title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Short explanation
-            Text(
-                text = finding.explanation,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
-
-            // Select checkbox if eligible
-            if (finding.isSelectable) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { onToggleSelect() }
-                        .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = isSelectedForPrompt,
-                        onCheckedChange = { onToggleSelect() },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = MaterialTheme.colorScheme.primary,
-                            checkmarkColor = Color.White
-                        )
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Add to improved prompt",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Medium,
-                            color = if (isSelectedForPrompt) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                }
-            }
-
-            // Expanded Section
-            AnimatedVisibility(visible = expanded) {
-                Column(modifier = Modifier.padding(top = 12.dp)) {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Why it matters
-                    Text(
-                        text = "Why this matters:",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = finding.whyItMatters,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Recommended fix
-                    Text(
-                        text = "Recommended fix:",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = finding.recommendedFix,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Security clause
-                    Text(
-                        text = "Recommended security clause:",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-                    ) {
-                        Text(
-                            text = finding.securityClause,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontFamily = FontFamily.Monospace,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 12.sp
                             ),
                             modifier = Modifier.padding(10.dp)
                         )
